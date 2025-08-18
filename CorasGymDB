@@ -1,0 +1,79 @@
+-- Represent all gym members
+-- Additional comment -- Use date format YYYY-MM-DD for all date fields (e.g., 1996-06-27)
+CREATE TABLE "Members" (
+      "id" INTEGER,
+      "first_name" TEXT NOT NULL,
+      "last_name" TEXT NOT NULL,
+      "date_birth" TEXT,
+      "gender" TEXT NOT NULL CHECK ("gender" IN ('Female', 'Male', 'Non_binary', 'Prefer_not_to_say')),
+      "phone_number" NUMERIC NOT NULL,
+      PRIMARY KEY ("id")
+);
+
+-- Represent all memberships types
+CREATE TABLE "Membership" (
+      "id" INTEGER,
+      "membership_type" TEXT NOT NULL CHECK ("membership_type" IN ('General', 'School', 'Daytime')),
+      "enter_time" TEXT NOT NULL CHECK ("enter_time" IN ('06:00', '10:00')),
+      "exit_time" TEXT NOT NULL CHECK ("exit_time" IN ('22:00', '16:00')),
+      "price" INTEGER NOT NULL CHECK ("price" IN (100,250,350,500,700,3500,7500)),
+      "membership_duration_days" INTEGER NOT NULL CHECK ("membership_duration_days" IN (1,2,3,4,5,6,7,30,60,90,180,365)),
+      "additional_comments" TEXT,
+      PRIMARY KEY ("id")
+);
+
+-- Represent all memberships details
+-- Additional comment -- Use date format YYYY-MM-DD for all date fields (e.g., 1996-06-27)
+CREATE TABLE "Memberships_records" (
+      "id" INTEGER,
+      "member_id" INTEGER NOT NULL,
+      "membership_id" INTEGER NOT NULL,
+      "membership_start_date" TEXT,
+      "membership_end_date" TEXT,
+      "status" TEXT NOT NULL CHECK ("status" IN ('Active', 'Not active')),
+      PRIMARY KEY ("id"),
+      FOREIGN KEY ("member_id") REFERENCES "Members" ("id"),
+      FOREIGN KEY ("membership_id" ) REFERENCES "Membership" ("id")
+);
+
+-- Represent all memberships payments
+-- Additional comment -- Use date format YYYY-MM-DD for all date fields (e.g., 1996-06-27)
+CREATE TABLE "Payments" (
+      "id" INTEGER,
+      "membership_record_id" INTEGER NOT NULL,
+      "payment_date" NUMERIC NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "amount" REAL NOT NULL,
+      "payment_method" TEXT NOT NULL CHECK ("payment_method" IN ('Cash', 'Debit Card', 'Credit Card', 'Wired Transfer')),
+      PRIMARY KEY ("id"),
+      FOREIGN KEY ("membership_record_id") REFERENCES "Memberships_records" ("id")
+);
+
+-- Represent all members attendance
+CREATE TABLE "Attendance" (
+    "id" INTEGER,
+    "member_id" INTEGER NOT NULL,
+    "date" TEXT NOT NULL DEFAULT (DATE('now')),
+    "entry_time" TEXT NOT NULL DEFAULT (strftime('%H:%M', 'now')),
+    "exit_time" TEXT NOT NULL DEFAULT '00:00',
+    PRIMARY KEY ("id"),
+    FOREIGN KEY ("member_id") REFERENCES "Members" ("id")
+);
+
+-- Represent all gym employees
+-- Additional comment -- Use date format YYYY-MM-DD for all date fields (e.g., 1996-06-27)
+CREATE TABLE "Employees" (
+      "id" INTEGER,
+      "first_name" TEXT NOT NULL,
+      "last_name" TEXT NOT NULL,
+      "role" TEXT NOT NULL CHECK ("role" IN ('Coach', 'Recepcionist', 'Maintenance')),
+      "date_birth" TEXT NOT NULL,
+      "status" TEXT NOT NULL CHECK ("status" IN ('Active', 'Not active')),
+      "phone_number" NUMERIC NOT NULL,
+      PRIMARY KEY ("id")
+);
+
+
+-- Create indexes to speed common searches
+CREATE INDEX "Gym_members" ON "Members" ("first_name", "last_name");
+CREATE INDEX "Gym_Employees" ON "Employees" ("first_name", "last_name", "role");
+CREATE INDEX "membership_status" ON "Memberships_records" ("status");
