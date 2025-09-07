@@ -119,9 +119,6 @@ All columns in the `Employees` table are required, and hence should have the `NO
 
 
 ### Relationships
-
-![ER Diagram](Gym-Relation-Diagram.png)
-
 As detailed by the diagram:
 
 * One member can have zero or many membership records.
